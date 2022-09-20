@@ -1,0 +1,1 @@
+print("[{\"seIpvUvHits\":\"5555\",\"num\":1}]", type("[{\"seIpvUvHits\":\"5555\",\"num\":1}]"))
