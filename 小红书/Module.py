@@ -1084,7 +1084,6 @@ class LittleRedBook:
 
 
 if __name__ == '__main__':
-    #
     chrome = ChromeOption()
     xhs = LittleRedBook()
     # #

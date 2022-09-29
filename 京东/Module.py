@@ -404,7 +404,7 @@ class JD:
                 params = {
                     'firstCategoryId': '',
                     'secondCategoryId': '',
-                    'thirdCategoryId': '1555,1556,1557,1559,1560,28090,5000',  # 类目
+                    'thirdCategoryId': 'all',  # 类目
                     'channel': '0',  # 终端
                     'brandId': '569468',  # 品牌
                     'shopType': 'all',  # 经营模式
@@ -621,36 +621,38 @@ class JD:
     def _commodity_details_request(self, start_day, page):
         url = 'https://ppzh.jd.com/brand/productAnalysis/productDetail/getProData.ajax'
         headers = {
-            'accept': '*/*',
+            'accept': 'application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
             'cache-control': 'no-cache',
-            'cookie': self._self_support_cookie,
-            'p-pin': 'gru33616540',
+            'cookie': self._self_cw_cookie,
             'pragma': 'no-cache',
-            'referer': 'https://ppzh.jd.com/brand/productAnalysis/productDetail.html',
+            'referer': 'https://ppzh.jd.com/brandweb/brand/view/productAnalysis/productDetail.html',
             'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
             'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': "Windows",
+            'sec-ch-ua-platform': 'Windows',
             'sec-fetch-dest': 'empty',
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'same-origin',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36',
-            'user-mnp': '018f914af0d82271da89ae070e1d3649',
-            'user-mup': '1640326141084',
-            'x-requested-with': 'XMLHttpRequest'
+            'user-mnp': 'e458d649dd573dd05c89cf42cfcf7ca2',
+            'user-mup': '1664174586287'
         }
         params = {
-            'thirdCategoryId': '1555,1556,1557,1558,1559,1560,21420,5000',
-            'channel': '0',
-            'brandId': '569468',
-            'shopType': 'all',
+            'brandId': 'all',
+            'firstCategoryId': '',
+            'secondCategoryId': '',
+            'thirdCategoryId': 'all',
             'date': f'{start_day}',
             'startDate': f'{start_day}',
             'endDate': f'{start_day}',
-            'orderBy': 'PV desc',
+            'shopType': 'all',
+            'channel': '0',
+            'skuId': '',
             'pageNum': f'{page}',
             'pageSize': '10',
-            'uuid': 'cf8bf017015f5590f204-17deb0e949c'
+            'orderBy': 'PV desc',
+            'proType': 'SKU',
+            'uuid': '9ff4c48c-57fd-4f77-a75c-3ec42d558ba7'
         }
         response = requests.get(url=url, headers=headers, params=params).json()
         print(response)
@@ -661,7 +663,6 @@ class JD:
         start_day = ''
         end_day = ''
         msg = self._commodity_details_main(start_day, end_day)
-
 
     # 交易构成_城市主函数
     def _transaction_composition_city_main(self, start_day, end_day):
@@ -720,7 +721,8 @@ class JD:
             'accept': '*/*',
             'accept-language': 'zh-CN,zh;q=0.9',
             'cache-control': 'no-cache',
-            'cookie': self._self_support_cookie,
+            'cookie': self._self_cw_cookie,
+            # 'cookie': '__jdv=122270672|direct|-|none|-|1663826472690; __jdu=16638264726891125818860; language=zh_CN; __USE_NEW_PAGEFRAME__=false; ceshi3.com=000; universityLanguage=zh_CN; xue_userTypeCookieName86415014f0f139efc1b2ea8ebce182dd="{\"1\":\"POP\"}"; xue_userTypePageCookieName86415014f0f139efc1b2ea8ebce182dd=1; _base_=YKH2KDFHMOZBLCUV7NSRBWQUJPBI7JIMU5R3EFJ5UDHJ5LCU7R2NILKK5UJ6GLA2RGYT464UKXAI5KK7PNC5B5UHJ2HVQ4ENFP57OC6PFTNGK572BGCOBAL2DUH7NATOTCNE6YVKRXISVFYORKEVSXKKV3TPWA3DW2RLWZCSG4SOQWCP5WPWO6EFS7HEHMRWVKBRVHB33TFD4LPBGIUGI546P7NTVFOE5ALAQOKBFWQG5PUOLY7PCVS4H4LJMB4CXWAZGAABSH3ET62Q5F7T7YAWXDH3ZRU7WA5GKJMYGGXIN62B2M7UBSRP2BADLWCZXCJFUXGHGJAACWKFZ4B3RTDQ7C23LPYV3KXRDQ3EEDABCU2WEDL6EFUQD4VXX623DGCJKY6NYXK7Y; 3AB9D23F7A4B3C9B=TFCFOJHRQZOYLK2FWKQSSM6DXK5TSPNZUKXEB3IOZDHWGCSNRIR7CJUCCFYMD33WRIOPG4UWO2T75KEVEBR6P46MTQ; wlfstk_smdl=ttv40wb28tii16ubrvis72bb65g7xjfr; TrackID=1JYk9_FKDAiGTBR4U2k5nqdOlNeONSV1mso5Uerig7eeXlVNUjy8vKF39s_ew0xOE8A3WQe6m-tvT4kZoznlEwEQBGOPW4iI0lDmVfYtpBqlqoZ0mlBCItQXwM05cuZ-V; thor=9A571C89424631D43D598C3647724AB4E07C44959A129EB1793E3913080D8046BA186E5FC2BF4143780B37D6D0CABA77A3C412192188C1A7C62EDD08A378149D714D74136BD20B0074702C522A309E9AAF24AE30B567F3980C5EAA9D5216608F492BF4A91ECAFA608FDBE9CA04189A2A0D3171399792A903D0A72CD5FDD9BBD8AEB5968F7E9D86E14BEAE2406CB01A38; pinId=dgESutCIIA-zI_nYeeAplBYfvTcS11Tn; pin=%E6%9D%AD%E5%B7%9E%E8%B5%AB%E5%B0%94%E7%BD%97%E6%AF%8D%E5%A9%B4; unick=%E6%9D%AD%E5%B7%9E%E8%B5%AB%E5%B0%94%E7%BD%97%E6%AF%8D%E5%A9%B4; _tp=it4%2B14DOBPrvaj%2FPkNmMck7HSXyAUdxclPBSrzCyAlnZqdOuvNDQCy2LhRXlU5v0U8EDdqveOppmC%2B913hA9SQ%3D%3D; _pst=%E6%9D%AD%E5%B7%9E%E8%B5%AB%E5%B0%94%E7%BD%97%E6%AF%8D%E5%A9%B4; __jda=243891652.16638264726891125818860.1663826473.1664156535.1664174414.3; __jdc=243891652; __jdb=243891652.9.16638264726891125818860|3.1664174414',
             'p-pin': 'gru33616540',
             'pragma': 'no-cache',
             'referer': 'https://ppzh.jd.com/brand/dealAnalysis/dealConstitute.html',
@@ -821,44 +823,44 @@ class JD:
 
 if __name__ == '__main__':
     jd = JD()
-    # chrome = ChromeOption()
-    # # 京东官方账号 cookie获取
-    # jd._official_cookie = chrome.jzt_login()
-    # #
-    # # 贝德美.JDGF.京准通_京挑客账户概况
-    # jd.accurate_communication_jing_pick_guest_jdgf_start()
-    # # 贝德美.JDGF.京准通_RTB账户概况
-    # jd.precision_RTB_account_jdgf_start()
-    # chrome.__del__()
+    chrome = ChromeOption()
+    # 京东官方账号 cookie获取
+    jd._official_cookie = chrome.jzt_login()
     #
-    # chrome = ChromeOption()
-    # # # 京东自营账号 cookie获取
-    # jd._self_support_cookie = chrome.jdsz_login()
-    # #
-    # # # # 贝德美.JDZY.京准通_京挑客账户概况
-    # jd.accurate_communication_jing_pick_guest_jdzy_start()
-    # # # 贝德美.JDZY.京准通_RTB账户概况
-    # jd.precision_RTB_account_jdzy_start()
-    # # # # 贝德美.JDZY.京麦_财务管理_实销实结明细  浙江孕
-    # jd.details_of_actual_sales_and_actual_settlement_zjyt_start()
-    # # # # 贝德美.JDZY.交易构成_商品
-    # # jd.transaction_constitute_commodity_start()
-    # # # # 贝德美.JDZY.商品明细_日
-    # jd.commodity_details_start()
-    # # # # 贝德美.JDZY.交易构成_商品_城市
-    # jd.transaction_composition_city_start()
-    # chrome.__del__()
+    # 贝德美.JDGF.京准通_京挑客账户概况
+    jd.accurate_communication_jing_pick_guest_jdgf_start()
+    # 贝德美.JDGF.京准通_RTB账户概况
+    jd.precision_RTB_account_jdgf_start()
+    chrome.__del__()
 
-    # # 京东自营账号 cookie获取
+    chrome = ChromeOption()
+    # # # 京东自营账号 cookie获取
+    jd._self_support_cookie = chrome.jdsz_login()
+    #
+    # # 贝德美.JDZY.京准通_京挑客账户概况
+    jd.accurate_communication_jing_pick_guest_jdzy_start()
+    # # 贝德美.JDZY.京准通_RTB账户概况
+    jd.precision_RTB_account_jdzy_start()
+    # # # 贝德美.JDZY.京麦_财务管理_实销实结明细  浙江孕
+    jd.details_of_actual_sales_and_actual_settlement_zjyt_start()
+    # # 贝德美.JDZY.交易构成_商品
+    # jd.transaction_constitute_commodity_start()
+    chrome.__del__()
+
+    # 京东自营账号 cookie获取
     chrome = ChromeOption()
     jd._self_cw_cookie = chrome.jdsz_login1()
-    #
-    # # 贝德美.JDZY.京麦_财务管理_实销实结明细
+
+    # 贝德美.JDZY.京麦_财务管理_实销实结明细
     jd.details_of_actual_sales_and_actual_settlement_hel_start()
     # # # 贝德美.JDZY.报表_店铺_日
     jd.operated_statement_shop_day_start()
-    # # 贝德美.JDZY.交易构成_商品
+    # 贝德美.JDZY.交易构成_商品
     jd.get_sku_infos_main('', '')
+    # # 贝德美.JDZY.商品明细_日
+    jd.commodity_details_start()
+    # 贝德美.JDZY.交易构成_商品_城市
+    jd.transaction_composition_city_start()
     chrome.__del__()
 
     chrome = ChromeOption()

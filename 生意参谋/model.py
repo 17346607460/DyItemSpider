@@ -1,9 +1,6 @@
-import time
-
-import requests
 from Setting import *
 from CurrencyModule import *
-from test2 import *
+from 淘宝.test2 import *
 
 
 class BusinessAdviser:
@@ -203,48 +200,46 @@ class BusinessAdviser:
             extData = '%.4f' % extData
         except:
             print('-----------------------------------------------------------------')
-            extData = get_pay(int(x))
+            raise '转化出错'
         print(extData)
         return extData
 
     # 市场大盘月度获取
-    def market_info(self, cateid, dts_cookie, start_month, end_month):
-        # url = "https://sycm.taobao.com/mc/mq/supply/mkt/overview.json"
-        # headers = {
-        #     'accept': '*/*',
-        #     'accept-language': 'zh-CN,zh;q=0.9',
-        #     'bx-ua': '223!g26SXoDgz6jgGCgyyg67xMFGrOX+xO6SoGmrPzgp4xKlhxinwCesBKUnSbimidGEIVO+2aXHN5kJuLpiqzcI/HTUYupq+PIvygG12GKNzsypKm5HKUT/PCRycK4je194rjR1zJUd+6Q4cgRTSeT/rXRu/Omqe1Q1+QMYiwYg/I38xNpC5oCkujRycAcq+x9tLljUz3x/e634cQQpWUT/rCWycAEs+1C4rQQ4hdg48PuIt5u+qlG08h+W6I+XzwVGiEV9M4UvjkFZbyyMCwoAewVlfc87oupGK0bR/DiiRJmrJjezelK4Lt97iHSv2Db+VooF8PRnBmwbrkey3k487VnRnKR63KI1nVBK46TL+/xICKRissuMhLJI5c0xciZi/2WMX6Id3EHYHIosGWH7xDP3gZpc7ZyV6jSDK3NLJ4ISa0Kcsuq1/3wo6kS12pPclfyzaqCFpHbknnpvpq6y25kY8l0QK9vO+dtFXDwrhVcEfeqdqKRFb4X8XgDyx8++9nIQDQp0tq7u6l+6C9u+Y027Ok8LIblJ8rRzrVfD54GpIFmra6jtyFi+xIRA0shHKsR9jigEOU/9/HbN1FFsQ1vVLkx97Dq1sZI95gxfYFpx7u8Hge33c8WIWMbMEsOHNn+AYNj4ZUMq4qerGzb0U7juFZtPrAJrPgo85AOG83a0SntcYrUKe7qeYnepb3F4zHq7Txn3IVendj8eTkNf+hKa5EhuvB9FL8HgT8DEh5GJMUGN1yfHZxyTbBMQGgJnL2jEDU2h68j8+A+rULsOkPZ5jgOS+NcVQVTWpFZLljnTkhm7GKJBpWLV/vSmCLldt61hRf43hxfThVtWFBfo+kTYC6TqXNUNexg7p5xj2idXjI5v9gmRTcIhdjVha6dCBOQW1U/w2xftXBLwWRs8vV8yqv5LCH/lU8vHnmWL6dgbh/KOh1YLO5IlOx+leAlzZof+c9Z0ePVaRu5oOOsXWtWDyLiMZTWFsL2r4mS91yU5FZOlfSxNxGM7bNKX1LNBpeXMEHj3gtZ5CnpU5Mdif9aBJSTnHIUjfPpd1wwc3Vabl9fkItr1F+3fPdtnbv5oN8cFwu2sNpDY/uFwctMSgO8qcBy7eAzqIbU3yZpn5YzmKPcop/bo1pyYNDbApC==',
-        #     'bx-umidtoken': 'G177E93F22AAEC8FD54AC794C5414A09A51194D00E6FB63190F',
-        #     'bx-v': '2.2.3',
-        #     'cache-control': 'no-cache',
-        #     'cookie': '_samesite_flag_=true; cookie2=14ddb4a56cce7567b01d80c90c00b3c7; t=8017ee70287cb1ebffabe3247a6d01b6; _tb_token_=e9e673b74b6e3; XSRF-TOKEN=2f0d9d65-63ce-4438-a148-91318c6c9262; xlly_s=1; thw=cn; sgcookie=E1002mrkV1lvER5j16hjsj0pcQC302DXOmbsJsfhSKJnlD6xZ2NnCqAHKiPPyLg82zTfJXbdJUWnF9s6ra99jf%2FfgyShiFVtjjh0h6kGwPfTuus%3D; unb=2212628883848; sn=dyyyz99%3A%E7%BB%83%E5%BA%86%E9%BE%99%E9%A3%9E; uc1=cookie14=UoeyDb7nP6lhzA%3D%3D&cookie21=WqG3DMC9Eman; csg=9640dbf8; cancelledSubSites=empty; skt=732e0f84832eb7d9; _cc_=URm48syIZQ%3D%3D; cna=B86mGwVewTECAXPDhgk9aeut; _euacm_ac_l_uid_=2212628883848; 2212628883848_euacm_ac_c_uid_=4224382495; 2212628883848_euacm_ac_rs_uid_=4224382495; _portal_version_=new; cc_gray=1; v=0; _euacm_ac_rs_sid_=231244751; _m_h5_tk=48545b892a5d081ad0622993e0d0d7bd_1663664615249; _m_h5_tk_enc=4bd3dc1b51c44319a41350c5eb9bb423; x5sec=7b226f702d6d633b32223a226166303163313962663664356665356437343766313865363139383437346631434d537a705a6b47454e7630327172507135336d62526f504d6a49784d6a59794f4467344d7a67304f4473784d49754e376454352f2f2f2f2f77464141773d3d227d; JSESSIONID=4A9CC799A500137BCEBC03FF6589D8E2; tfstk=cWjhBV6BHw8QNvHiqwtQ4wbm5bRhZxiyigS1bJIzw5YkOOINiz0ZuhO8IBVbT41..; l=fBNhYW9VTEW_wyjNBO5CFurza77TEIRb8sPzaNbMiIeca6p1Lem9GNCEfreybdtjgTfbpetrshOewRFHP-438x_hQJXiua1hps96-bpU-L5..; isg=BBoappmDLTwZ5KGmu3FagEXna8A8S54lZi2_eiSTCq1wl7vRDN_eNNWhZ2MLRxa9',
-        #     'onetrace-card-id': 'sycm-mc-mq-market-overview.sycm-mc-mq-cate-trend',
-        #     'pragma': 'no-cache',
-        #     'referer': 'https://sycm.taobao.com/mc/mq/overview?cateFlag=1&cateId=50014812&dateRange=2022-09-17%7C2022-09-17&dateType=day&sellerType=-1&spm=a21ag.11815228.LeftMenu.d590.671a50a53Y0VvJ',
-        #     'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-        #     'sec-ch-ua-mobile': '?0',
-        #     'sec-ch-ua-platform': 'Windows',
-        #     'sec-fetch-dest': 'empty',
-        #     'sec-fetch-mode': 'cors',
-        #     'sec-fetch-site': 'same-origin',
-        #     'sycm-query': 'dateType=day',
-        #     'sycm-referer': '/mc/mq/overview',
-        #     'transit-id': 'K+PS/ycpE5fo6EkCYK0yiuODtUU1kig4maD6Na+9e6eONIFCFxXbFYEnM0emQdcLmUgn2ylHoxpjoGqmAhjqcl5Zl15jhlCW25yJw5nOJsNQJ23rrdy8RCrXy9S7aEuZOIabPbfBMnosWMhVg7aHGIvgZ2FEoaEmL5EtCHpvEXU=',
-        #     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36'
-        # }
-        # params = {
-        #     'dateType': 'month',
-        #     'dateRange': f'{start_month}-01|{get_before_day(get_after_month(start_month) + "-01")}',
-        #     'cateId': cateid,
-        #     'device': '0',
-        #     'sellerType': '-1',
-        #     '_': '1663654362374',
-        #     'token': 'f5b822396'
-        # }
-        # response = requests.get(url=url, headers=headers, params=params).json()
-        # print(response)
-        # datas = response['data']
-        datas = '978A6CAB053F0786DA3FDCE8F4A06FE64A65BD9E70931938146734F166B386C09068481D93B5CCA05C1E40F5125263D74A56FDE68EBC699711F556CEE46465CA50F33B6AD009BBF4EEA20A78C3D650E011B6DB29358612395E77920FDB80DF85F3656CF0DCB3DFA94A6E7980C38FF954B6740EFB63641291F9882CF4894AF9E20B9DBC4AE0316738DFEF49C9720456426CDAA63CA8D28A7AE1E34C3415FBB6889B11E61EA4490197A2B3F7AD4D4AD098F481253B9BF66E10C63343D5871959C953B02BE6CE02859999D79AC9EED7010D2D33B190A679B8D221F19534DF8CEE93292FEB8F81BFDEDF47E8DD834CAB098E29F3DF783B69644BDD69887BDD4F8893B41725078AD03A1581803D2D88052B1380D98730A5D42F75D56CD6F635882C51CE434A8FA904D613C14D196EA89C435B3437B7D0417DB72896EB34AC1DF4F72D51FCD98D8772E12EBA800DA9D611806F93F601539771CFB6D07196F539A2A105AF1E339CE3D94A8850A5B6E7B3C60010DD6165B5DA9306594F82F1431EE201FCD1695CD4722012B72C61B60DE183CD7C653087CAF44EFA29C2839D0F5B4E527F8E0916E8F62B50EB0D2CE4F9B133A1DBA00A1F31741A5DA915315D60C04240D285A3EC4F6C2D785D3A8D43916E3625CD83E6939B1F84A40164B6927BFC317484'
+    def market_info(self, cateid, dts_cookie, start_month, end_month, cookie):
+        url = "https://sycm.taobao.com/mc/mq/supply/mkt/overview.json"
+        headers = {
+            'accept': '*/*',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'bx-ua': '223!g26SXoDgz6jgGCgyyg67xMFGrOX+xO6SoGmrPzgp4xKlhxinwCesBKUnSbimidGEIVO+2aXHN5kJuLpiqzcI/HTUYupq+PIvygG12GKNzsypKm5HKUT/PCRycK4je194rjR1zJUd+6Q4cgRTSeT/rXRu/Omqe1Q1+QMYiwYg/I38xNpC5oCkujRycAcq+x9tLljUz3x/e634cQQpWUT/rCWycAEs+1C4rQQ4hdg48PuIt5u+qlG08h+W6I+XzwVGiEV9M4UvjkFZbyyMCwoAewVlfc87oupGK0bR/DiiRJmrJjezelK4Lt97iHSv2Db+VooF8PRnBmwbrkey3k487VnRnKR63KI1nVBK46TL+/xICKRissuMhLJI5c0xciZi/2WMX6Id3EHYHIosGWH7xDP3gZpc7ZyV6jSDK3NLJ4ISa0Kcsuq1/3wo6kS12pPclfyzaqCFpHbknnpvpq6y25kY8l0QK9vO+dtFXDwrhVcEfeqdqKRFb4X8XgDyx8++9nIQDQp0tq7u6l+6C9u+Y027Ok8LIblJ8rRzrVfD54GpIFmra6jtyFi+xIRA0shHKsR9jigEOU/9/HbN1FFsQ1vVLkx97Dq1sZI95gxfYFpx7u8Hge33c8WIWMbMEsOHNn+AYNj4ZUMq4qerGzb0U7juFZtPrAJrPgo85AOG83a0SntcYrUKe7qeYnepb3F4zHq7Txn3IVendj8eTkNf+hKa5EhuvB9FL8HgT8DEh5GJMUGN1yfHZxyTbBMQGgJnL2jEDU2h68j8+A+rULsOkPZ5jgOS+NcVQVTWpFZLljnTkhm7GKJBpWLV/vSmCLldt61hRf43hxfThVtWFBfo+kTYC6TqXNUNexg7p5xj2idXjI5v9gmRTcIhdjVha6dCBOQW1U/w2xftXBLwWRs8vV8yqv5LCH/lU8vHnmWL6dgbh/KOh1YLO5IlOx+leAlzZof+c9Z0ePVaRu5oOOsXWtWDyLiMZTWFsL2r4mS91yU5FZOlfSxNxGM7bNKX1LNBpeXMEHj3gtZ5CnpU5Mdif9aBJSTnHIUjfPpd1wwc3Vabl9fkItr1F+3fPdtnbv5oN8cFwu2sNpDY/uFwctMSgO8qcBy7eAzqIbU3yZpn5YzmKPcop/bo1pyYNDbApC==',
+            'bx-umidtoken': 'G177E93F22AAEC8FD54AC794C5414A09A51194D00E6FB63190F',
+            'bx-v': '2.2.3',
+            'cache-control': 'no-cache',
+            'cookie': cookie,
+            'onetrace-card-id': 'sycm-mc-mq-market-overview.sycm-mc-mq-cate-trend',
+            'pragma': 'no-cache',
+            'referer': 'https://sycm.taobao.com/mc/mq/overview?cateFlag=1&cateId=50014812&dateRange=2022-09-17%7C2022-09-17&dateType=day&sellerType=-1&spm=a21ag.11815228.LeftMenu.d590.671a50a53Y0VvJ',
+            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': 'Windows',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'sycm-query': 'dateType=day',
+            'sycm-referer': '/mc/mq/overview',
+            'transit-id': 'K+PS/ycpE5fo6EkCYK0yiuODtUU1kig4maD6Na+9e6eONIFCFxXbFYEnM0emQdcLmUgn2ylHoxpjoGqmAhjqcl5Zl15jhlCW25yJw5nOJsNQJ23rrdy8RCrXy9S7aEuZOIabPbfBMnosWMhVg7aHGIvgZ2FEoaEmL5EtCHpvEXU=',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36'
+        }
+        params = {
+            'dateType': 'month',
+            'dateRange': f'{start_month}-01|{get_before_day(get_after_month(start_month) + "-01")}',
+            'cateId': cateid,
+            'device': '0',
+            'sellerType': '-1',
+            '_': '1663654362374',
+            'token': 'f5b822396'
+        }
+        response = requests.get(url=url, headers=headers, params=params).json()
+        datas = response['data']
         datas = decrypt(datas)
         print(datas)
         # 搜索人气 搜索热度 访问人气 浏览热度 收藏人气 收藏热度 加购人气 加购热度 客群指数 交易指数
@@ -261,10 +256,60 @@ class BusinessAdviser:
         infos = ['seIpvUvHits', 'sePvIndex', 'uvHits', 'pvHot', 'cltHits', 'cltHot', 'cartHits', 'cartHot', 'payByrCntIndex', 'tradeIndex']
         value = []
         for info in infos:
-            # print([info, int(datas[info]['value'])])
-            value.append(change_info(cateid, [info, int(datas[info]['value'])], 'Hm_lvt_623a6e6c9e21142aa93edc3fffb24a30=1663579827; token=80265f3e-7127-4e7a-af6b-5d3f450d00b5; Hm_lpvt_623a6e6c9e21142aa93edc3fffb24a30=1663583486'))
-        values = value + [seIpvUvHits, sePvIndex, uvHits, pvHot, cltHits, cltHot, cartHits, cartHot, payByrCntIndex, tradeIndex]
-        print(values)
+            value.append(change_info(cateid, [info, int(datas[info]['value'])], dts_cookie))
+        values = [start_month.replace('-', ''), cateid] + value + [seIpvUvHits, sePvIndex, uvHits, pvHot, cltHits, cltHot, cartHits, cartHot, payByrCntIndex, tradeIndex]
+        self.sql_server.save_message('贝德美.dbo.市场大盘_全网_类目_月', [tuple(values)])
+
+    # 获取市场大盘的所有类目
+    def get_ids(self, cookie):
+        '''
+        获取所有类目id结构
+        '''
+        url = 'https://sycm.taobao.com/mc/common/getShopCate.json?leaf=true&edition=pro&_=1655882260326&token=25ef342ef'
+        headers = {
+            'accept': '*/*',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'bx-ua': '216!LLDI4ymrqUQzNLIfxDsf0ogDv0p3pYsclQbsfKwKQvHmzbnWwQcUzy5SwfRdo6IQU4P4hEmfWa45g13/hLFIt8mEHEN0Q9jzWeF2zYMBXjdyHi9Mn2lmJJRhahtZ1fm0hYv1deiCaNegB48ZBdDwqQ1/SIREpIYozaMFv7m8z3i8jvE5OrP3CbtvYxXK/0WZSHhGvEgAdF8b0EPuC5cHugMy52beeOW5zihVMijAt3ez9GnMLUguU3ZkUf6m12WZnD1o3v5AJgmqnIWAXV0VRBY/Kp7HuqQf98U8skDJ1G2RdB9lIbEVb7e8X29JVDLFZImYRqzJyFGzHKbl0whMnXB0fJloPIiTUMMZ6DHx0yjLqEvueIqsgGpARoYe7SVs6Z5V4OdylYnlzladCTfytEaP5mF0O54y3NrvvMTLh7DWCUMeWH1dRPDqiJypssj+XY6euvjn8sZEI/MeW2nTxDgoiJypssj+XY6eLvq3V3Z6ILsA4LLlBQKQLDD5jnVmocEi90PtdAA7YOkYNQj0WfFw9imIVbL8AByx+pV1WLjKjycT1OuVIIC0Y0bwX2f0GCiQ+2MO22bLSLEhmxdDUMZOCMze2jN2WPReOR3WeQ190GvseIYByQOYJ+aZ8hFaEWwYr3nFrSAsSjaLiY1BjyZGgfft7Ouu79vDmDrZPD1ki1IZmRxkAkIj91DZEchgD1TjscCKBwo7YIPqsOd25l7WJPzJFNjLKOHvrtfpauFnxH/xQmNQXDBwFhJ/YPjN+NThJlSeuF4VAAa9zbFsHD8VsQxvH8cS07Op2Wtzjp+0XU8kEHxSZ52rBcHzMgAmph8vpKzro1fL57U8DQBRoO30j1wkpTbnOeaBcRXfKolvHtrsB3D8UPjxCY7JBlK/RjMcIR2vTKbgwywDKGuCOdy3cdAWi01HV5R8XEuJWC8VxAup3vbRPH5E/rvBWNv9LNSOCGzGJVb4mpXcEZkrPh3qTt0ydiFuu+UDZFDnOCmGsfbKukmPjdkjpuk6r56ceUPzLTZskaszYXWSnRM62dXu9+9WuCkTBJ0bHkjFe9BmhqZRt47U3J5jlauuOHJjnrrl3vczzseKk/vK9rSfx6GQkGehREaeFlcPzks72jj5SkO=',
+            'bx-umidtoken': 'T2gAPn2YgI69ZtbgW5AJGdJR1qe10urkx_lTtIqntXXYSEb8RnTG3Yxcefe_Ovyfqhw=',
+            'cache-control': 'no-cache',
+            'cookie': cookie,
+            'pragma': 'no-cache',
+            'referer': 'https://sycm.taobao.com/mc/mq/overview?cateId=50012841&dateRange=2021-10-01%7C2021-10-31&dateType=month&parentCateId=50016455&sellerType=-1&spm=a21ag.11815228.LeftMenu.d590.43bf50a5tlJmAo',
+            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': "Windows",
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'sycm-query': 'dateType=month',
+            'sycm-referer': '/mc/mq/overview',
+            'transit-id': 'Jh6LE8LsALMuuloeYdnN9jznn/2d0SVuYf/Ygl/HdGWuuURSHKAw/twGkSynpiyGcKigtIUFokPPIaSiB97DALnjitja2441L1n6ksQDfNL7BEgSL3mWjDDa8hAq/cZQ8xkUwtQwNdNrYnEkSSYJvscnh9bVQt+bYWRK8U26P/c=',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36'
+        }
+        response = requests.get(url=url, headers=headers).json()['data']
+        print(response)
+        return response
+
+    # 市场大盘_全网_类目_月
+    def market_network_category_month_start(self, childid, end_month, start_month, dts_cookie, cookie):
+        all_childid_ids = self.get_ids(cookie)
+        print(all_childid_ids)
+        if childid == 50014812 or childid == 50022517:
+            print(f'一级类目：{childid}')
+            self.market_info(childid, dts_cookie, start_month, end_month, cookie)
+        else:
+            for i in all_childid_ids:
+                print(i[0], i[1], childid)
+                print(i)
+                if i[0] == childid:
+                    print(f'二级类目：{childid} ------> {i[2]} {i[1]}')
+                    self.market_info(i[1], dts_cookie, start_month, end_month, cookie)
+                    time.sleep(10)
+                if i[1] == childid:
+                    print(f'叶子类目：{childid} ------> {i[2]} {i[1]} {i[-1]}')
+                    self.market_info(i[1], dts_cookie, start_month, end_month, cookie)
+                    time.sleep(20)
 
 
 if __name__ == '__main__':
@@ -281,4 +326,7 @@ if __name__ == '__main__':
     #         break
     #     start_day = get_after_month(start_day)
     #     time.sleep(20)
-    ba.market_info('50252001', '_samesite_flag_=true; cookie2=14ddb4a56cce7567b01d80c90c00b3c7; t=8017ee70287cb1ebffabe3247a6d01b6; _tb_token_=e9e673b74b6e3; XSRF-TOKEN=2f0d9d65-63ce-4438-a148-91318c6c9262; xlly_s=1; thw=cn; sgcookie=E1002mrkV1lvER5j16hjsj0pcQC302DXOmbsJsfhSKJnlD6xZ2NnCqAHKiPPyLg82zTfJXbdJUWnF9s6ra99jf%2FfgyShiFVtjjh0h6kGwPfTuus%3D; unb=2212628883848; sn=dyyyz99%3A%E7%BB%83%E5%BA%86%E9%BE%99%E9%A3%9E; uc1=cookie14=UoeyDb7nP6lhzA%3D%3D&cookie21=WqG3DMC9Eman; csg=9640dbf8; cancelledSubSites=empty; skt=732e0f84832eb7d9; _cc_=URm48syIZQ%3D%3D; cna=B86mGwVewTECAXPDhgk9aeut; _euacm_ac_l_uid_=2212628883848; 2212628883848_euacm_ac_c_uid_=4224382495; 2212628883848_euacm_ac_rs_uid_=4224382495; _portal_version_=new; cc_gray=1; v=0; _euacm_ac_rs_sid_=231244751; _m_h5_tk=48545b892a5d081ad0622993e0d0d7bd_1663664615249; _m_h5_tk_enc=4bd3dc1b51c44319a41350c5eb9bb423; x5sec=7b226f702d6d633b32223a226166303163313962663664356665356437343766313865363139383437346631434d537a705a6b47454e7630327172507135336d62526f504d6a49784d6a59794f4467344d7a67304f4473784d49754e376454352f2f2f2f2f77464141773d3d227d; JSESSIONID=4A9CC799A500137BCEBC03FF6589D8E2; tfstk=cWjhBV6BHw8QNvHiqwtQ4wbm5bRhZxiyigS1bJIzw5YkOOINiz0ZuhO8IBVbT41..; l=fBNhYW9VTEW_wyjNBO5CFurza77TEIRb8sPzaNbMiIeca6p1Lem9GNCEfreybdtjgTfbpetrshOewRFHP-438x_hQJXiua1hps96-bpU-L5..; isg=BBoappmDLTwZ5KGmu3FagEXna8A8S54lZi2_eiSTCq1wl7vRDN_eNNWhZ2MLRxa9', '2022-07', '2022-07')
+
+    # dts_cookie = 'Hm_lvt_623a6e6c9e21142aa93edc3fffb24a30=1663579827; token=80265f3e-7127-4e7a-af6b-5d3f450d00b5; Hm_lpvt_623a6e6c9e21142aa93edc3fffb24a30=1663583486'
+    # cookie = 't=da03a3a2ff72f7a25e393fbd232e1134; cookie2=121ead4360c93f87765c152c6653fe17; _tb_token_=389583a0e66ae; _samesite_flag_=true; XSRF-TOKEN=acd73bc1-09ac-4719-9f17-828c35aea530; _m_h5_tk=dbddd03a9291277daff1922ca6ac0205_1663819051599; _m_h5_tk_enc=afc5228bc7cc37d15f85037abd6f2a2b; xlly_s=1; sgcookie=E100yv7RbXLvc7adXfbk08znRzcJiiD2UkP7oJSIrr%2BJ3i5tgHy8eR0xqVTgGOAsowh9m3c6awVsbqeTmJPcjYJ9jcoHVkocTOqgiYwfqmBpCgM%3D; unb=2212628883848; sn=dyyyz99%3A%E7%BB%83%E5%BA%86%E9%BE%99%E9%A3%9E; uc1=cookie14=UoeyDbC4V6ww2g%3D%3D&cookie21=VT5L2FSpdiBh; csg=397e0046; cancelledSubSites=empty; skt=b334e9cd84cae9e0; _cc_=WqG3DMC9EA%3D%3D; _euacm_ac_l_uid_=2212628883848; 2212628883848_euacm_ac_c_uid_=4224382495; 2212628883848_euacm_ac_rs_uid_=4224382495; _portal_version_=new; cc_gray=1; v=0; cna=jWCxGw8o4HwCAXPG25PMGsWZ; _euacm_ac_rs_sid_=231244751; JSESSIONID=50E6CAEEAC7DFBDBACECF35646779797; l=fBE4J76mTrlClhfaXOfwPurza77OSIRAguPzaNbMi95POJXe5CZdW6oM5DtwC3GVF6yJR3lMfBR8BeYBqIcvHW3MakQWBdHmnmOk-Wf..; tfstk=cs7VBPTtxrUV1NQsGU8NzZ1it5ufZ8Ccs4RBmJKvW_t_4CtcitD9ZKOvaCGrInf..; isg=BJKSV_3DJQYqt1l7_tZs9er441h0o5Y9vkUn0lzrvsUwbzJpRDPmTZiJ38vTHw7V'
+    # ba.market_network_category_month_start(122854005, '2022-08', '2022-08', dts_cookie, cookie)

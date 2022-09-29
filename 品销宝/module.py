@@ -8,13 +8,13 @@ class PinXiaoBao:
         self.sql_server = SqlServerConnect()
 
     def run_main(self, start_day, cookie):
-        self.delete_30_change()
         if not start_day:
             start_day = self.sql_server.get_start_day('贝德美.dbo.品销宝_明星店铺_点击_账户', '日期', '')
             if start_day == get_before_day(get_today()):
                 print('数据获取完毕')
                 return 0
-            start_day = get_after_day(start_day)
+            start_day = get_before_day(get_today())
+        self.delete_30_change()
         csrfID = self.getcsrftoken(cookie)
         print(csrfID)
         print(start_day)
@@ -200,16 +200,9 @@ class PinXiaoBao:
         self.sql_server.save_message('贝德美.dbo.品销宝_明星店铺_点击_账户', [tuple(save_info)])
 
     def delete_30_change(self):
-        sql = """select 转化周期, 日期 from 贝德美.dbo.品销宝_明星店铺_点击_账户"""
-        datas = self.sql_server.check_message(sql, 1)
-        print(datas)
-        for infos in datas:
-            change_date = infos[0]
-            date = infos[1]
-            if change_date < 30:
-                d_sql = f"delete from 贝德美.dbo.品销宝_明星店铺_点击_账户 where 日期='{date}'"
-                print(d_sql)
-                self.sql_server.check_message(d_sql, 2)
+        d_sql = f"delete from 贝德美.dbo.品销宝_明星店铺_点击_账户 where 转化周期<30"
+        print(d_sql)
+        self.sql_server.check_message(d_sql, 2)
 
     def getcsrftoken(self, cookie):
         url = 'https://branding.taobao.com/login/userInfo.json?r=mx_4&_bx-v=1.1.20'
@@ -229,7 +222,6 @@ class PinXiaoBao:
         }
 
         response = requests.get(url=url, headers=headers).json()
-        print(response)
         # response = response.split('_1646738316862(')[1][:-1]
         # response = demjson.decode(response)
         csrfID = response['data']['csrfID']
@@ -238,5 +230,5 @@ class PinXiaoBao:
 
 if __name__ == '__main__':
     pxb = PinXiaoBao()
-    cookie = 't=ba991419abcabe60cd3884e42a2b30f4; cookie2=1d11a579ddc9331e331a8cbf42b950a2; _samesite_flag_=true; XSRF-TOKEN=72300891-8dd3-4c4e-ba64-79f4f168a1ea; _tb_token_=e7e136a736685; xlly_s=1; _m_h5_tk=fde39c21e448200db854f242d6138722_1658896672885; _m_h5_tk_enc=1c9561ff68abe6090c2e84c1d7dc30af; sgcookie=E100yb%2FffxeHO5fooggOOQrpYUI6kEUsYip3L62%2BuNMlwSn2y0JrFu4ZFwyF1hvqtIY%2BQy4Q24O9DwV6MCQHjGtyF1wIN4kvpUEMQqV%2BnQfqWJo%3D; unb=2212731641217; sn=%E8%B4%9D%E5%BE%B7%E7%BE%8E%E6%97%97%E8%88%B0%E5%BA%97%3A%E9%BE%99%E9%A3%9E; uc1=cookie21=W5iHLLyFfoaZ&cookie14=UoexOtdmk6fpiQ%3D%3D; csg=08e42e8f; cancelledSubSites=empty; skt=b09ea84472c0b827; _cc_=UIHiLt3xSw%3D%3D; cna=nWYbGpuKHDsCAXkEs3F2iXa2; tfstk=cfxFBuT8BDnFnuT27GsrF4V6evCCZfJHElWf-jtblciSzTQhiIVRId6dQTwaZwf..; l=eB_anV6cgpC-RUZWXOfwourza77OSIRAguPzaNbMiOCPOv6p5TNcW6xXVyx9C3GVh682R3Wrj_IwBeYBqIfxX1gZhXHmKvDmn; isg=BJOT0rQL9VvV_rp9tUS0zfu0Ihe9SCcKCmEYt0Ww77LpxLNmzRi3WvES_jSq5H8C'
-    pxb.run_main('2022-09-19', cookie)
+    cookie = 't=ba991419abcabe60cd3884e42a2b30f4; thw=cn; cookie2=1f9299af1907012d87ad1bdc6b31c185; _tb_token_=531317e3585e1; _samesite_flag_=true; cancelledSubSites=empty; xlly_s=1; unb=2212731641217; sn=%E8%B4%9D%E5%BE%B7%E7%BE%8E%E6%97%97%E8%88%B0%E5%BA%97%3A%E9%BE%99%E9%A3%9E; v=0; _m_h5_tk=c0f0651696f7be9bb658358dccfe52f0_1664164784815; _m_h5_tk_enc=98147579e3cc44473dd76e6a1e2e633b; sgcookie=E100SBmzOwRVvLbAXNvGf%2FHi3jfjCE7wJ7q2wz3ub70ErlZxAenrF48OxSG4upmOtoItoO4UUmw%2BP%2FYeJNtz6omS40whFWO8KOF21JL2j81rjoM%3D; uc1=cookie14=UoeyChPsK0ZV5w%3D%3D&cookie21=UtASsssmfufd; csg=8afe183c; skt=09abfd5f5d644e79; _cc_=Vq8l%2BKCLiw%3D%3D; cna=nWYbGpuKHDsCAXkEs3F2iXa2; isg=BJ-ftDsiAGf4QwRcvTZg-BFQLvMpBPOmCbepETHsI86VwL9COdaZ9hqWglC-2Mse; tfstk=cc01B-ZMmOX_KQ8cSROeQNoYgnr5ZQ17Ghwi1pRl5G99zzh1iX7zF6WmmtU4MW1..; l=eBSlN7-VTNKFSd7ABOfwourza77t7IRAguPzaNbMiOCPOq695gTOW6ujy7-pCnGVhs96R3z1UrspBeYBqIqBHo1ShXHmKYMmn'
+    pxb.run_main('', cookie)

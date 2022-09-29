@@ -62,7 +62,7 @@ class TikTok:
         for i in response:
             # print(i['id'])
             ids.append(i['id'])
-        if len(ids) != 13:
+        if len(ids) != 14:
             raise '账户数量不对'
         return ids
 
@@ -444,12 +444,11 @@ class TikTok:
             }
             response = requests.post(url=url, headers=headers, json=data)
             print(response.text, 111111111111111111111111111111111111111111111)
-            if response.text:
+            if response.text and response != 'Forbidden':
                 break
             else:
                 time.sleep(3)
         return response.json()
-
 
     # 抖音创意报表
     def create_idea_report_main(self, cookie, start_day, end_day):
@@ -703,21 +702,86 @@ class TikTok:
         r.close()
         return datas
 
-    # 星图达人价格
-    # def
-    #     url = 'https://www.xingtu.cn/h/api/gateway/handler_get/?platform_source=1&order_by=score&sort_type=2&search_scene=1&display_scene=1&limit=20&page=1&regular_filter=%7B%22current_tab%22:3,%22marketing_target%22:2,%22task_category%22:1%7D&attribute_filter=%7B%7D&author_pack_filter=%7B%7D&service_name=go_search.AdStarGoSearchService&service_method=SearchForStarAuthors&sign_strict=1&sign=6a574654a9323f9667d0c78c853cf152'
+    # 贝德美.DDGF.交易构成_店铺_日_新
+    def transaction_composition_shop_day_new_main(self, start_day, end_day, cookie):
+        if not start_day:
+            start_day = self._sql_server.get_start_day('贝德美.DDGF.交易构成_店铺_日_新', '日期', '')
+            if start_day == get_before_day(get_today()):
+                print('今天数据已经抓取完毕')
+                return 0
+            start_day = get_after_day(start_day)
+        if not end_day:
+            end_day = get_before_day(get_today())
+        values = []
+        response = self.get_transaction_composition_shop_day_new_zd(start_day, cookie)
+        print(response)
+        datas = response['data']
+        values = self.insert_info_in_values(datas, start_day, values, '终端构成')
+        self._sql_server.save_message('贝德美.DDGF.交易构成_店铺_日_新', values)
+
+    def insert_info_in_values(self, datas, start_day, values, info_type):
+        for data in datas:
+            name = data['base_info']['identity_base_info']['name']
+            avg_pay_user_amt = float(data['metrics']['avg_pay_user_amt']['value']['value'])/100  # 成交客单价
+            pay_amt = float(data['metrics']['pay_amt']['value']['value'])/100  # 成交金额
+            pay_ucnt = data['metrics']['pay_ucnt']['value']['value']  # 成交人数
+            product_click_pay_pv_ratio = float(data['metrics']['product_click_pay_pv_ratio']['value']['value'])  # 点击支付转化率
+            value = (start_day, info_type, name, pay_amt, pay_ucnt, avg_pay_user_amt, product_click_pay_pv_ratio)
+            print(value)
+            values.append(value)
+        return values
+
+    def get_transaction_composition_shop_day_new_zd(self, start_day, cookie):
+        url = 'https://compass.jinritemai.com/compass_api/shop/mall/transaction_analysis/terminal_overview'
+        headers = {
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'cache-control': 'no-cache',
+            'cookie': cookie,
+            'pragma': 'no-cache',
+            'referer': 'https://compass.jinritemai.com/shop/business-part',
+            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': 'Windows',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36'
+        }
+        params = {
+            'date_type': '999',
+            'begin_date': f'{start_day.replace("-", "/")} 00:00:00',
+            'end_date': f'{start_day.replace("-", "/")} 00:00:00',
+            'sorter': 'pay_amt',
+            'is_asc': 'false',
+            '_lid': '340223435144',
+            'msToken': 'lPQjuA3v3hj4-dGfGRZbVdMZLnl0H414uU59iJoDXWxf-TAHqJOE6u3q3ocOgWJkknU9S3Fp6A2otOSxR0sTAICGR5nqtM8nzVvYTToniUWk0XX1msOq',
+        }
+        response = requests.get(url=url, headers=headers, params=params).json()
+        return response
 
 
 if __name__ == '__main__':
-    # https://business.oceanengine.com/site/promotion?#/ecp/bidding/account
-    jlzh_cookie = 'csrftoken=kpdHBDC_ju6HRGqY3jHVSvAH; gr_user_id=f1d2612f-352f-4a5b-b1c7-edc519055b40; grwng_uid=c37b68df-ef11-4d78-babf-ce4970f9689d; passport_csrf_token=73a82def6b3213d1ee103ae5ad894ade; passport_csrf_token_default=73a82def6b3213d1ee103ae5ad894ade; ttwid=1%7Cym8DI5mlhkCXIpJryh1wQA0iW84Y2h0TQbuHZT-UTiE%7C1662516172%7Ce6b4a6948af56d2e40edcdee61788eeaf9573cf0c05cae85c6c79d9648782775; ttcid=22fe56fa459e4b09b1fa321d295314b532; tt_scid=AkaHc7q5emk941AScsJbBHX3QZuugJQzvnfdklTmz.QMuPLyLG0Gsx4.Y6KQ4lxYdd0a; s_v_web_id=verify_l7qz7ltc_ywVaRaSt_ikbr_423o_9YJI_Efry8Jqu7FRk; _tea_utm_cache_2018=undefined; d_ticket=13f2c17c2d4f359fb9bc248b0bf6adf58ea4e; n_mh=Ea7ohvZmpq2GgYEw5hDBKPPhomLW-8LmjUonzOlwQuQ; sso_auth_status=42c117ef104f03cf465ed11702046ca8; sso_auth_status_ss=42c117ef104f03cf465ed11702046ca8; sso_uid_tt=8ef2ee5672066355c757d1661d23624a; sso_uid_tt_ss=8ef2ee5672066355c757d1661d23624a; toutiao_sso_user=be1f531ec1a0a92cf39f6b9c8ce7e433; toutiao_sso_user_ss=be1f531ec1a0a92cf39f6b9c8ce7e433; sid_ucp_sso_v1=1.0.0-KDkzNjY0ZDc3MmVlNzM4ZmE1MTA5MTA1ZmFkMmQ3ZDJhMjA2NDhhNDYKHwiU_cCF0IzOBhD099-YBhj6CiAMMIikwIoGOAJA8QcaAmxmIiBiZTFmNTMxZWMxYTBhOTJjZjM5ZjZiOWM4Y2U3ZTQzMw; ssid_ucp_sso_v1=1.0.0-KDkzNjY0ZDc3MmVlNzM4ZmE1MTA5MTA1ZmFkMmQ3ZDJhMjA2NDhhNDYKHwiU_cCF0IzOBhD099-YBhj6CiAMMIikwIoGOAJA8QcaAmxmIiBiZTFmNTMxZWMxYTBhOTJjZjM5ZjZiOWM4Y2U3ZTQzMw; msToken=b7TSvGe1zD28N7Q32V7P88VjB4ksMZg1oraS_Xj342pe7MhTKbXbxIh1UuYCkD6dNXeOYRjFG45rHIu4nhR6F-jc6XLgpaCNABrBk06ojyhF; odin_tt=1760e9b39f927218cd37f6ac5c47ef1e31f6b726d2e7d4bdf5592e0e95d3a6b3c76df1abcdf9d7eb9df18ae7b75b46e9f7f720e9ede33a3c75c63afbda27dbda; passport_auth_status=ffbf5e1461d308dc91cbfe729568e022%2C0d3e3ca5401dc2b2593ce0ab9b0a924e; passport_auth_status_ss=ffbf5e1461d308dc91cbfe729568e022%2C0d3e3ca5401dc2b2593ce0ab9b0a924e; sid_guard=498c58d37c0bbde0cc6446e1478888df%7C1662516212%7C5184000%7CSun%2C+06-Nov-2022+02%3A03%3A32+GMT; uid_tt=dd88e9f3d1a1cc60257647ba9432407e; uid_tt_ss=dd88e9f3d1a1cc60257647ba9432407e; sid_tt=498c58d37c0bbde0cc6446e1478888df; sessionid=498c58d37c0bbde0cc6446e1478888df; sessionid_ss=498c58d37c0bbde0cc6446e1478888df; sid_ucp_v1=1.0.0-KDRjNmM0NWIxZTkxNjQ4NjgzNWVkMDQ3ODM4OGNkOTAwN2E5NWVjYWIKGQiU_cCF0IzOBhD099-YBhj6CiAMOAJA8QcaAmxmIiA0OThjNThkMzdjMGJiZGUwY2M2NDQ2ZTE0Nzg4ODhkZg; ssid_ucp_v1=1.0.0-KDRjNmM0NWIxZTkxNjQ4NjgzNWVkMDQ3ODM4OGNkOTAwN2E5NWVjYWIKGQiU_cCF0IzOBhD099-YBhj6CiAMOAJA8QcaAmxmIiA0OThjNThkMzdjMGJiZGUwY2M2NDQ2ZTE0Nzg4ODhkZg; gftoken=NDk4YzU4ZDM3Y3wxNjYyNTE2MjEyNzZ8fDAGBgYGBgY; trace_log_adv_id=undefined; trace_log_user_id=3721181151641236'
     tk = TikTok()
-    # https://qianchuan.jinritemai.com/data-report/bidding/live?aavid=1696543798927432
+
+    # # https://qianchuan.jinritemai.com/data-report/bidding/live?aavid=1696543798927432
     cookie = 'BUYIN_SASID=SID2_3569868405764979738; passport_csrf_token=99733c8d819a59aca0ca5a5d122bbd85; passport_csrf_token_default=99733c8d819a59aca0ca5a5d122bbd85; ttwid=1%7C1-rC236pOlUYpqagy9o9eeSuBd_g3b0quVy0Pd5YEZg%7C1662349518%7C9e09a710b862c7ed4f202b48702a2bcb5a1f067eb5c738c484120ab8f4793fe3; d_ticket=8e4cbcf62da9790b53fded5bbb86814b0470b; n_mh=Ea7ohvZmpq2GgYEw5hDBKPPhomLW-8LmjUonzOlwQuQ; sso_auth_status=4b11158324a25369748f53d9392dea41; sso_auth_status_ss=4b11158324a25369748f53d9392dea41; sso_uid_tt=218ca897e29de567b549a5ecf24d9c08; sso_uid_tt_ss=218ca897e29de567b549a5ecf24d9c08; toutiao_sso_user=c403b6ed5bdf2a36bd0ecf00212622a6; toutiao_sso_user_ss=c403b6ed5bdf2a36bd0ecf00212622a6; sid_ucp_sso_v1=1.0.0-KDVkZjk4MDhlYjg5ZTg1OTU1N2I5MDBlMWY5MTBiN2MzYjFlODFhMDUKHwiU_cCF0IzOBhDr4dWYBhiwISAMMIikwIoGOAJA8QcaAmxmIiBjNDAzYjZlZDViZGYyYTM2YmQwZWNmMDAyMTI2MjJhNg; ssid_ucp_sso_v1=1.0.0-KDVkZjk4MDhlYjg5ZTg1OTU1N2I5MDBlMWY5MTBiN2MzYjFlODFhMDUKHwiU_cCF0IzOBhDr4dWYBhiwISAMMIikwIoGOAJA8QcaAmxmIiBjNDAzYjZlZDViZGYyYTM2YmQwZWNmMDAyMTI2MjJhNg; odin_tt=c0b3163b20ea12722725dae2980b9a61ae21753f8493063b44b95fe6d06e6691d2043093de7509beeeab95fe5ac812c43855ed585813c9f9b573e03575c5194e; passport_auth_status=5d6b80dda82c4317fc65da198073209a%2Cc4b67a6b9d755192189660b23da8ecf3; passport_auth_status_ss=5d6b80dda82c4317fc65da198073209a%2Cc4b67a6b9d755192189660b23da8ecf3; ucas_sso_c0=CkEKBTEuMC4wEJ-IkLaom9yKYxjmJiDAkvCB34zAByiwITCU_cCF0IzOBkDt4dWYBkjtlZKbBlCEvN7w9bD4p2FYbxIUrd0wVH7BbE2quX1NV-5RFG8lG6A; ucas_sso_c0_ss=CkEKBTEuMC4wEJ-IkLaom9yKYxjmJiDAkvCB34zAByiwITCU_cCF0IzOBkDt4dWYBkjtlZKbBlCEvN7w9bD4p2FYbxIUrd0wVH7BbE2quX1NV-5RFG8lG6A; ucas_c0=CkEKBTEuMC4wEIeIisz2m9yKYxjmJiDAkvCB34zAByiwITCU_cCF0IzOBkDt4dWYBkjtlZKbBlCEvN7w9bD4p2FYbxIU0nqkgCTTj4XtyCGPJWMt38LFGPM; ucas_c0_ss=CkEKBTEuMC4wEIeIisz2m9yKYxjmJiDAkvCB34zAByiwITCU_cCF0IzOBkDt4dWYBkjtlZKbBlCEvN7w9bD4p2FYbxIU0nqkgCTTj4XtyCGPJWMt38LFGPM; sid_guard=4ac7ab47bc3b3ab9c4a1c535ad13a7e2%7C1662349549%7C5184000%7CFri%2C+04-Nov-2022+03%3A45%3A49+GMT; uid_tt=fbc47ba41d689781f58498fc104e7a0f; uid_tt_ss=fbc47ba41d689781f58498fc104e7a0f; sid_tt=4ac7ab47bc3b3ab9c4a1c535ad13a7e2; sessionid=4ac7ab47bc3b3ab9c4a1c535ad13a7e2; sessionid_ss=4ac7ab47bc3b3ab9c4a1c535ad13a7e2; sid_ucp_v1=1.0.0-KDEyODliYjY5Y2MxYjFlNjczYjM0ZmIyYmI1ODM5ODI2ZGUxMDJlZDEKFwiU_cCF0IzOBhDt4dWYBhiwITgCQPEHGgJsZiIgNGFjN2FiNDdiYzNiM2FiOWM0YTFjNTM1YWQxM2E3ZTI; ssid_ucp_v1=1.0.0-KDEyODliYjY5Y2MxYjFlNjczYjM0ZmIyYmI1ODM5ODI2ZGUxMDJlZDEKFwiU_cCF0IzOBhDt4dWYBhiwITgCQPEHGgJsZiIgNGFjN2FiNDdiYzNiM2FiOWM0YTFjNTM1YWQxM2E3ZTI; PHPSESSID=2f8bf9c86a11a80c9284af137e541b0d; PHPSESSID_SS=2f8bf9c86a11a80c9284af137e541b0d; qc_tt_tag=0; ttcid=8273e9e8deb44976a6410594dab0ef2724; csrf_session_id=aff671027f78aa34ee9fbe3eec54e817; csrftoken=jsFzZGdt-WqUGQM64hUB6lu4sjkkb70E3Bcc; x-jupiter-uuid=16623499980446382; tt_scid=th8H77lsCfHzbUebKjPAQsAHtqY4Vq.vN8YGYQFzFz8s4bwnzgOthP18UqFZQ3ql651b; msToken=xijdWh_CVywDBGvWQsw1mEOligZ-XkS-kNa1lFjyrDSeRpgf4YoaQ5mvFoMM8AI_bUtAbyQqF2FOhp8fFBVndNzj0X173IRFZtxDHUsttYSw4BYEQ4W7kGzmxjJktT4=; msToken=EiZ_Z55HtRe9__PNBKQArkqHm42xTWKd8zwtjau36t-1qsgH8stPyRQdpOeYbxMx3A4MH4vgKSnrDXQqbBRdkbk7rRMNVzWfRgaE8GHQDjeTfD5hTqgJ'
-    #  贝德美.DDGF.巨量千川_基础报表_计划
+
+    # #  贝德美.DDGF.巨量千川_基础报表_计划
     tk.plan_report_form_main(cookie, '', '')
-    # 贝德美.DDGF.巨量千川_基础报表_创意
+
+    # # 贝德美.DDGF.巨量千川_基础报表_创意
     tk.create_idea_report_main(cookie, '', '')
-    # 贝德美.DDGF.行业洞察_品牌市场份额_类目
+
+    print('-----------------------------------------------------------------------------')
+
+    # https://yuntu.oceanengine.com/yuntu_ng/login  15968888938@163.com  Bdm123456.
     cookie = 'MONITOR_WEB_ID=d06f3fc5-ee9f-47e7-9159-53467d3c4624; ttcid=0f498bc8b9514439958949c244090bc215; tt_scid=hZJpz02r48TKtjqN3YRAQQAdmNM9pOv0lP8FnkNG4xpvOU-FZEAJoUyaSSBLVa5u8986; loginType=email; passport_csrf_token=cc7e4995e7565560745538bde553ffbf; passport_csrf_token_default=cc7e4995e7565560745538bde553ffbf; s_v_web_id=verify_l7zkjqum_ySBEUu7d_WJ9w_4e7m_8nyE_LbPTC51CEM5Y; n_mh=9-mIeuD4wZnlYrrOvfzG3MuT6aQmCUtmr8FxV8Kl8xY; sso_uid_tt=9052c06c37c2f62dea82a593962dd103; sso_uid_tt_ss=9052c06c37c2f62dea82a593962dd103; toutiao_sso_user=682bb9e4739bcfed14ee09a8483a4771; toutiao_sso_user_ss=682bb9e4739bcfed14ee09a8483a4771; sid_ucp_sso_v1=1.0.0-KGUxNWI3MmE3OThiYjI0OWUyMTkzMjQzZTVkZjdhM2JkMDQxZTUwNTkKFwjLkfC-1PSVBxDs0v-YBhjkDjgBQOsHGgJsZiIgNjgyYmI5ZTQ3MzliY2ZlZDE0ZWUwOWE4NDgzYTQ3NzE; ssid_ucp_sso_v1=1.0.0-KGUxNWI3MmE3OThiYjI0OWUyMTkzMjQzZTVkZjdhM2JkMDQxZTUwNTkKFwjLkfC-1PSVBxDs0v-YBhjkDjgBQOsHGgJsZiIgNjgyYmI5ZTQ3MzliY2ZlZDE0ZWUwOWE4NDgzYTQ3NzE; sid_guard=4d492b6b126990e8f5fe2735c932794f%7C1663035756%7C5184000%7CSat%2C+12-Nov-2022+02%3A22%3A36+GMT; uid_tt=395ea1802d31e8368ff8039826fc9482; uid_tt_ss=395ea1802d31e8368ff8039826fc9482; sid_tt=4d492b6b126990e8f5fe2735c932794f; sessionid=4d492b6b126990e8f5fe2735c932794f; sessionid_ss=4d492b6b126990e8f5fe2735c932794f; sid_ucp_v1=1.0.0-KGI2OWVjMDAzOTc5YjNiZjc5MzVmOGFmYmMyNDg4ZjUxODljM2M3MWYKFwjLkfC-1PSVBxDs0v-YBhjkDjgBQOsHGgJsZiIgNGQ0OTJiNmIxMjY5OTBlOGY1ZmUyNzM1YzkzMjc5NGY; ssid_ucp_v1=1.0.0-KGI2OWVjMDAzOTc5YjNiZjc5MzVmOGFmYmMyNDg4ZjUxODljM2M3MWYKFwjLkfC-1PSVBxDs0v-YBhjkDjgBQOsHGgJsZiIgNGQ0OTJiNmIxMjY5OTBlOGY1ZmUyNzM1YzkzMjc5NGY; msToken=JNhEHAHXc2ru6qN00c9I3FX9cvro_k-49K4j_t1VpP-Q95Dm1UQ5iPrrqteIP7Ep6Do12rckc9iHl1hHcy8598oytHqlz-KlXNqGIzVQJrWDWC3PrHje; msToken=82C0HUQ9pYrXk--FcfMAkY6rvjuj4NTS-0ICRf3RWsNvg3u7Sa7eERPaosZAybQQmIbWqKBiuDPqDiV5yZ7r1YaVXdx-nreutJ1rM2zBhUfJtlyoiYWC1bPXRFXujA=='
+
+    # # 贝德美.DDGF.行业洞察_品牌市场份额_类目
     tk.yuntu_trend_analysis('', '', cookie)
+
+    # 电商罗盘  https://compass.jinritemai.com/shop/business-part
+    lp_cookie = 'passport_csrf_token=b231cb39b58e96307db35a4bca6f1dc8; passport_csrf_token_default=b231cb39b58e96307db35a4bca6f1dc8; ucas_sso_c0=CkEKBTEuMC4wEIiIgvD2zYGUYxjmJiDAkvCB34zAByiwITCu-oGk5YziAUD3jKCZBkj3wNybBlCivJz45oHpsmFYcBIUfawOW_XxtVR9Q9BWuA-m31tYjjI; ucas_sso_c0_ss=CkEKBTEuMC4wEIiIgvD2zYGUYxjmJiDAkvCB34zAByiwITCu-oGk5YziAUD3jKCZBkj3wNybBlCivJz45oHpsmFYcBIUfawOW_XxtVR9Q9BWuA-m31tYjjI; qc_tt_tag=0; gw_5242_252992=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjQ0MzcxNTcsImlhdCI6MTY2MzgzMjM1NywibWF0Y2giOmZhbHNlLCJuYmYiOjE2NjM4MzIzNTcsInBlcmNlbnQiOjAuNDIyNzE5NDU3OTE4MzUyNjR9.yD1mJQ_V6w9jcxDJFVqwRBYG8V24pC2mdighhj2qe0s; _tea_utm_cache_4031=undefined; _tea_utm_cache_4499=undefined; x-jupiter-uuid=16638323588022036; csrf_session_id=6931960f34e955558ebb99aa7c7f511b; MONITOR_WEB_ID=3140c9a0-26e9-46e1-b1fa-acac421d8167; s_v_web_id=verify_l8cqu53r_uo6lZkfG_jGIL_45A3_8WCx_UsTezN4x9nyJ; _tea_utm_cache_2018=undefined; ttcid=9fcd032c4ca6430f98c3b473a562422716; d_ticket=835c729f9917f3481023d7c3f9033f7f80427; odin_tt=83eeed32f1436a37630e3292701f575b2eede466db056da6d32f2b0d1f131c14915e84591aa687a800c8716fea0dfaa3330042e1783ecbebd10fbb7280b42c37; n_mh=Ea7ohvZmpq2GgYEw5hDBKPPhomLW-8LmjUonzOlwQuQ; passport_auth_status=b72b350e34b9e3b01a60947bad380758%2Cf0b7be6b44ece46eb2a392cfa818f714; passport_auth_status_ss=b72b350e34b9e3b01a60947bad380758%2Cf0b7be6b44ece46eb2a392cfa818f714; PHPSESSID=0cb9202b58db950f7b64219f1068b034; PHPSESSID_SS=0cb9202b58db950f7b64219f1068b034; LUOPAN_DT=session_7146104380603875624; tt_scid=PV7IMAXtvA3nLR80VuemnU21-xpAvZkSnrnb-HaOfTUoizbt6gmXEiW8g9BFC2yief84; BUYIN_SASID=SID2_3573192392733517338; ttwid=1%7CxDdV6RVS4CZxjpChG0K6wf9FfncoOJihv7Qhl0ctVDI%7C1663898142%7Cebf1118119a62d72f67baea4f2330b60f6e0b99ae1f1d2b4db2b63c1e92d41a3; ucas_c0=Ch0KBTEuMC4wEIiIgvD2zYGUY0CepLSZBkiex7mZBhIU6qM-R9xKotaCp_t2bIzyUrPQJH0; ucas_c0_ss=Ch0KBTEuMC4wEIiIgvD2zYGUY0CepLSZBkiex7mZBhIU6qM-R9xKotaCp_t2bIzyUrPQJH0; sid_guard=f72ee46e06daf7ce94118d6ca71c64ca%7C1663898142%7C21600%7CFri%2C+23-Sep-2022+07%3A55%3A42+GMT; uid_tt=623373569bee357d6512cc181536ad27; uid_tt_ss=623373569bee357d6512cc181536ad27; sid_tt=f72ee46e06daf7ce94118d6ca71c64ca; sessionid=f72ee46e06daf7ce94118d6ca71c64ca; sessionid_ss=f72ee46e06daf7ce94118d6ca71c64ca; sid_ucp_v1=1.0.0-KGM5YTQ5MDEzYjBmOTQ5NGFlYTBkYzQ3ZWZlNDE5YmM0NGZmMjcyZmYKCRCepLSZBhiwIRoCbGYiIGY3MmVlNDZlMDZkYWY3Y2U5NDExOGQ2Y2E3MWM2NGNh; ssid_ucp_v1=1.0.0-KGM5YTQ5MDEzYjBmOTQ5NGFlYTBkYzQ3ZWZlNDE5YmM0NGZmMjcyZmYKCRCepLSZBhiwIRoCbGYiIGY3MmVlNDZlMDZkYWY3Y2U5NDExOGQ2Y2E3MWM2NGNh; msToken=KLRsgHWkpKsUUqD2oM8lYelfXfLnr1opoY1VxmwkiPAhqeElp8hsnTh1tBbdAIkY63EwN1EpQ2J0EyeX6FHBm4G3MppedLL2VAtKKx2mk-jHcpaFr6Dm7eKU364vqw==; msToken=CseSkxpaNc80_v7DF7Hl5yP3_j_nvndRs7VsRLavs2gCDXWiC3a_KoINTVoa-mEvf8wbqPLlsTr-zL6m3K_HKr3paXtMUREE09ZaG0iuIBryX7rxfaT_34YZfxhV9g=='
+    tk.transaction_composition_shop_day_new_main('2022-09-28', '2022-09-28', lp_cookie)
+

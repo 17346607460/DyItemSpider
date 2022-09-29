@@ -64,7 +64,6 @@ def get_after_month(date):
     date = date.replace('-', '')
     year = int(date[:-2])
     month = int(date[-2:])
-    print(year, month, 1111111111111111111111111111111111111)
     if month == 12:
         month = 1
         year += 1
